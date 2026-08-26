@@ -1,0 +1,461 @@
+# NĪ / būvniecības / arhitektūras ziņu avoti
+# Katram avotam: id, name, home. Pēc tam VIENS no:
+#   feed:   zināms RSS/Atom URL
+#   auto:   true  -> skripts pats meklē feed (homepage <link rel=alternate>, /feed/, /rss ...)
+#   scrape: HTML lapa + link_contains regex (kad RSS nav vispār)
+# filter: true  -> raksts iet cauri tikai tad, ja virsrakstā/aprakstā ir kāds no keywords
+#                  (lieto plašajiem ziņu portāliem, lai nesūta sportu un politiku)
+
+settings:
+  max_per_source: 12        # cik jaunu rakstu no viena avota vienā ciklā
+  max_per_run: 25           # cik ziņu Telegram vienā ciklā (pārējie gaida nākamo)
+  request_timeout: 20
+  user_agent: "AIS-zinu-monitors/1.0 (+https://ais-up.com)"
+
+# Atslēgvārdi filtrētajiem avotiem. Mazie burti, salīdzina bez diakritikas.
+keywords:
+  - nekustam
+  - ipasum
+  - majokl
+  - dzivokl
+  - buvniec
+  - buvatlauj
+  - buvvald
+  - arhitekt
+  - projektes
+  - attistitaj
+  - jaunbuv
+  - kadastr
+  - zemesgramat
+  - teritorijas planojum
+  - apbuv
+  - hipotek
+  - iri tirgus
+  - ires tirgus
+  - komercipasum
+  - biroju eka
+  - noliktav
+  - kvartal
+  - renovac
+  - parbuv
+  - siltinas
+  - energoefektiv
+  - butiskas cenas
+  - nekustamo ipasumu
+
+sources:
+
+  # ---------- 1. Vispārējie ziņu portāli (filtrēti) ----------
+  - id: lsm
+    name: "LSM"
+    home: https://www.lsm.lv/
+    feed: https://www.lsm.lv/rss/
+    filter: true
+    category: zinu-portali
+
+  - id: delfi
+    name: "Delfi"
+    home: https://www.delfi.lv/
+    auto: true
+    feed_candidates:
+      - https://www.delfi.lv/rss/
+      - https://www.delfi.lv/rss/?channel=bizness
+    filter: true
+    category: zinu-portali
+
+  - id: tvnet
+    name: "TVNET"
+    home: https://www.tvnet.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  - id: apollo
+    name: "Apollo"
+    home: https://www.apollo.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  - id: la
+    name: "LA.lv"
+    home: https://www.la.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  - id: nra
+    name: "NRA"
+    home: https://nra.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  - id: jauns
+    name: "Jauns.lv"
+    home: https://jauns.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  - id: diena
+    name: "Diena"
+    home: https://www.diena.lv/
+    auto: true
+    filter: true
+    category: zinu-portali
+
+  # ---------- 2. Biznesa mediji ----------
+  - id: db
+    name: "Dienas Bizness"
+    home: https://www.db.lv/
+    auto: true
+    scrape:
+      url: https://www.db.lv/sadalas/nekustamais-ipasums
+      link_contains: "/zinas/"
+    filter: false
+    category: biznesa-mediji
+
+  - id: nozare
+    name: "Nozare.lv"
+    home: https://nozare.lv/
+    auto: true
+    scrape:
+      url: https://nozare.lv/business
+      link_contains: "/business/"
+    filter: true
+    category: biznesa-mediji
+
+  - id: ir
+    name: "Ir"
+    home: https://ir.lv/
+    auto: true
+    filter: true
+    category: biznesa-mediji
+
+  - id: forbes
+    name: "Forbes Baltics"
+    home: https://forbesbaltics.com/lv
+    auto: true
+    filter: true
+    category: biznesa-mediji
+
+  - id: labsoflatvia
+    name: "Labs of Latvia"
+    home: https://labsoflatvia.com/
+    auto: true
+    filter: true
+    category: biznesa-mediji
+
+  - id: bnn
+    name: "BNN"
+    home: https://bnn-news.com/
+    auto: true
+    filter: true
+    category: biznesa-mediji
+
+  # ---------- 3. Būvniecības nozares mediji (NEfiltrēti - viss ir par tēmu) ----------
+  - id: building
+    name: "building.lv"
+    home: https://building.lv/
+    auto: true
+    scrape:
+      url: https://building.lv/
+      link_contains: "building.lv/[0-9]+-|/raksts/|/zinas/"
+    filter: false
+    category: buvnieciba
+
+  - id: abc
+    name: "abc.lv"
+    home: https://abc.lv/
+    auto: true
+    scrape:
+      url: https://abc.lv/aktualitates
+      link_contains: "/raksts/"
+    filter: false
+    category: buvnieciba
+
+  - id: buvlaukums
+    name: "buvlaukums.lv"
+    home: https://buvlaukums.lv/lv/
+    auto: true
+    scrape:
+      url: https://buvlaukums.lv/lv/news/
+      link_contains: "/news/"
+    filter: false
+    category: buvnieciba
+
+  - id: bis
+    name: "BIS jaunumi"
+    home: https://bis.gov.lv/
+    auto: true
+    scrape:
+      url: https://bis.gov.lv/lv/news
+      link_contains: "/news/"
+    filter: false
+    category: buvnieciba
+
+  - id: bvkb
+    name: "BVKB"
+    home: https://www.bvkb.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://www.bvkb.gov.lv/lv/jaunumi
+      link_contains: "/jaunum|/raksts/"
+    filter: false
+    category: buvnieciba
+
+  - id: latvijasbuvnieki
+    name: "LBA - Latvijas būvnieki"
+    home: https://www.latvijasbuvnieki.lv/
+    auto: true
+    scrape:
+      url: https://www.latvijasbuvnieki.lv/jaunumi/
+      link_contains: "/jaunumi/"
+    filter: false
+    category: buvnieciba
+
+  # ---------- 4. Arhitektūra un dizains ----------
+  - id: a4d
+    name: "A4D"
+    home: https://a4d.lv/
+    feed: https://a4d.lv/feed/
+    filter: false
+    category: arhitektura
+
+  - id: latarh
+    name: "LAS - latarh.lv"
+    home: https://www.latarh.lv/
+    auto: true
+    scrape:
+      url: https://www.latarh.lv/jaunumi
+      link_contains: "/jaunum|/zinas/"
+    filter: false
+    category: arhitektura
+
+  - id: arterritory
+    name: "Arterritory"
+    home: https://arterritory.com/lv/
+    auto: true
+    feed_candidates:
+      - https://arterritory.com/lv/feed/
+      - https://arterritory.com/feed/
+    filter: false
+    category: arhitektura
+
+  - id: fold
+    name: "FOLD"
+    home: https://fold.lv/
+    feed: https://fold.lv/feed/
+    filter: false
+    category: arhitektura
+
+  - id: deko
+    name: "Deko"
+    home: https://deko.delfi.lv/
+    auto: true
+    filter: false
+    category: arhitektura
+
+  - id: balticarchitecture
+    name: "Baltic Architecture"
+    home: https://balticarchitecture.com/
+    auto: true
+    filter: false
+    category: arhitektura
+
+  # ---------- 5. NĪ portālu ziņu sadaļas ----------
+  - id: city24
+    name: "City24"
+    home: https://www.city24.lv/
+    auto: true
+    scrape:
+      url: https://www.city24.lv/real-estate-news
+      link_contains: "/real-estate-news-story/"
+    filter: false
+    category: ni-portali
+
+  - id: varianti
+    name: "Varianti"
+    home: https://www.varianti.lv/lv
+    auto: true
+    scrape:
+      url: https://www.varianti.lv/lv/blog
+      link_contains: "/blog/detail/article/"
+    filter: false
+    category: ni-portali
+
+  - id: cityreal
+    name: "CityReal"
+    home: https://www.cityreal.lv/
+    auto: true
+    scrape:
+      url: https://www.cityreal.lv/info/ni-zinas/
+      link_contains: "/ni-zinas/zina/"
+    filter: false
+    category: ni-portali
+
+  - id: balticproperty
+    name: "Baltic Property"
+    home: https://balticproperty.lv/
+    auto: true
+    scrape:
+      url: https://balticproperty.lv/lat/nekustama-ipasuma-zinas
+      link_contains: "/zinas|/raksts"
+    filter: false
+    category: ni-portali
+
+  - id: balticrealestate
+    name: "Baltic Real Estate"
+    home: http://www.balticrealestate.lv/
+    auto: true
+    scrape:
+      url: http://www.balticrealestate.lv/real-estate-news-in-latvia/
+      link_contains: "/real-estate|/news"
+    filter: false
+    category: ni-portali
+
+  # ---------- 6. Aģentūras un konsultanti ----------
+  - id: latio
+    name: "Latio"
+    home: https://latio.lv/
+    auto: true
+    scrape:
+      url: https://latio.lv/jaunumi
+      link_contains: "/jaunumi/"
+    filter: false
+    category: agenturas
+
+  - id: arco
+    name: "Arco Real Estate"
+    home: https://www.arcoreal.lv/
+    auto: true
+    scrape:
+      url: https://www.arcoreal.lv/lv/jaunumi
+      link_contains: "/jaunumi/|/raksts/"
+    filter: false
+    category: agenturas
+
+  - id: colliers
+    name: "Colliers Latvia"
+    home: https://www.colliers.com/en-lv
+    auto: true
+    scrape:
+      url: https://www.colliers.com/en-lv/research
+      link_contains: "/research/"
+    filter: false
+    category: agenturas
+
+  - id: newsec
+    name: "Newsec"
+    home: https://newsec.lv/
+    auto: true
+    filter: false
+    category: agenturas
+
+  - id: oberhaus
+    name: "Ober-Haus"
+    home: https://www.ober-haus.lv/
+    auto: true
+    scrape:
+      url: https://www.ober-haus.lv/jaunumi/
+      link_contains: "/jaunumi/"
+    filter: false
+    category: agenturas
+
+  - id: cbre
+    name: "CBRE Baltics"
+    home: https://www.cbre.lv/
+    auto: true
+    filter: false
+    category: agenturas
+
+  - id: nicena
+    name: "Nicena"
+    home: https://nicena.lv/
+    auto: true
+    filter: false
+    category: agenturas
+
+  # ---------- 7. Banku ekonomisti ----------
+  - id: swedbank
+    name: "Swedbank blogs"
+    home: https://blog.swedbank.lv/
+    auto: true
+    feed_candidates:
+      - https://blog.swedbank.lv/feed
+      - https://blog.swedbank.lv/ekonomika/feed
+    filter: true
+    category: bankas
+
+  - id: latvijasbanka
+    name: "Latvijas Banka"
+    home: https://www.bank.lv/
+    auto: true
+    filter: true
+    category: bankas
+
+  - id: apkartraksts
+    name: "Apkārtraksts"
+    home: https://apkartraksts.substack.com/
+    feed: https://apkartraksts.substack.com/feed
+    filter: false
+    category: bankas
+
+  # ---------- 8. Oficiālie avoti ----------
+  - id: lvportals
+    name: "LV portāls"
+    home: https://lvportals.lv/
+    auto: true
+    filter: true
+    category: oficialie
+
+  - id: csp
+    name: "CSP"
+    home: https://stat.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://stat.gov.lv/lv/jaunumi
+      link_contains: "/jaunumi/"
+    filter: true
+    category: oficialie
+
+  - id: vzd
+    name: "VZD"
+    home: https://www.vzd.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://www.vzd.gov.lv/lv/jaunumi
+      link_contains: "/jaunum"
+    filter: false
+    category: oficialie
+
+  - id: em
+    name: "Ekonomikas ministrija"
+    home: https://www.em.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://www.em.gov.lv/lv/jaunumi
+      link_contains: "/jaunum"
+    filter: true
+    category: oficialie
+
+  - id: km
+    name: "Kultūras ministrija"
+    home: https://www.km.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://www.km.gov.lv/lv/jaunumi
+      link_contains: "/jaunum"
+    filter: true
+    category: oficialie
+
+  - id: iub
+    name: "IUB"
+    home: https://www.iub.gov.lv/lv
+    auto: true
+    scrape:
+      url: https://www.iub.gov.lv/lv/jaunumi
+      link_contains: "/jaunum"
+    filter: true
+    category: oficialie
