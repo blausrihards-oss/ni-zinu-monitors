@@ -1,0 +1,59 @@
+name: NI zinu monitors
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Režīms"
+        required: false
+        default: "normal"
+        type: choice
+        options: [normal, seed, dry-run]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: zinu-monitors
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalēt atkarības
+        run: pip install -r requirements.txt
+
+      - name: Palaist monitoru
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          case "${{ inputs.mode }}" in
+            seed)    python monitor.py --seed ;;
+            dry-run) python monitor.py --dry-run ;;
+            *)       python monitor.py ;;
+          esac
+
+      - name: Saglabāt seen.json
+        run: |
+          if [[ -n "$(git status --porcelain seen.json)" ]]; then
+            git config user.name  "zinu-monitors"
+            git config user.email "actions@github.com"
+            git add seen.json
+            git commit -m "seen.json $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          else
+            echo "nekas nav mainījies"
+          fi
